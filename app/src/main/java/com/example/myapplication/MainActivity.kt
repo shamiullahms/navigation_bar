@@ -1,14 +1,17 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.bottomNavigation
 
 class MainActivity : FragmentActivity() {
-
+    val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +32,23 @@ class MainActivity : FragmentActivity() {
                 R.id.action_shop -> goToShop()
                 else -> false
             }
+        }
+
+        val viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        viewModel.quantity.observe(this) {
+            updateBadge(it)
+        }
+    }
+
+    private fun updateBadge(count: Int?) {
+        Log.i(TAG, "Total order count $count")
+        var badge = bottomNavigation.getOrCreateBadge(R.id.action_shop)
+        if (count!! == 0) {
+            badge.isVisible = false
+        }
+        else {
+            badge.isVisible = true
+            badge.number = count!!
         }
     }
 
